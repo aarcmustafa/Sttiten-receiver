@@ -15,10 +15,13 @@ version = 0.1
 # (str) Android build tools version to avoid license issues
 android.build_tools_version = 33.0.0
 
+# (list) Target architectures (تحديد دعم معمارية ARM7 والمعماريات الأخرى)
+android.architectures = armeabi-v7a, arm64-v8a
+
 # (str) Source files where the app lives (relative to directory of buildozer.spec)
 source.dir = .
 
-# (list) Source files to include
+# (list) Source files to include (بما فيها الملفات المطلوبة مثل json و hcy)
 source.include_exts = py,png,jpg,kv,atlas,json,hcy
 
 # (list) Application requirements
