@@ -54,6 +54,10 @@ jobs:
           $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR "platform-tools" "build-tools;33.0.2" "platforms;android-33"
 
       - name: Build with Buildozer
+        env:
+          # إلغاء مسارات النظام الافتراضية المتعارضة وتوجيه البناء للمسار الصحيح
+          ANDROID_NDK_HOME: ""
+          ANDROID_SDK_ROOT: "/home/runner/.buildozer/android/platform/android-sdk"
         run: |
           buildozer -v android debug
           
