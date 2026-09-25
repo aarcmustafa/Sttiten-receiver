@@ -22,15 +22,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Fix SDK Manager Symlink & Licenses
+      - name: Install Android SDK Command-line Tools Manually
         run: |
-          # إنشاء المجلدات اللازمة مسبقاً
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/licenses
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
+          # إنشاء الهيكل الصحيح لمجلدات الـ SDK التي ينتظرها Buildozer
+          ANDROID_SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
+          mkdir -p $ANDROID_SDK_DIR/licenses
+          mkdir -p $ANDROID_SDK_DIR/cmdline-tools
           
-          # وضع ملفات التراخيص لمنع أي توقف
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          # تحميل أدوات سطر الأوامر الرسمية وفك ضغطها في المسار الصحيح
+          cd $ANDROID_SDK_DIR/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
+          unzip -q commandlinetools.zip
+          mv cmdline-tools latest
+          rm commandlinetools.zip
+          
+          # إضافة التراخيص المقبولة مسبقاً لتجنب أي توقف
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_SDK_DIR/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_SDK_DIR/licenses/android-sdk-license
+          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> $ANDROID_SDK_DIR/licenses/android-sdk-license
 
       - name: Build with Buildozer
         run: |
