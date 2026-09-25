@@ -22,30 +22,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Force SDK Tools Structure for Buildozer
+      - name: Configure Android Environment & Licenses
         run: |
-          # تحديد مسار الـ SDK المحلي لـ Buildozer
-          SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
-          mkdir -p $SDK_DIR/licenses
-          mkdir -p $SDK_DIR/cmdline-tools
+          # إنشاء مجلد التراخيص في مسار SDK الخاص بالنظام لضمان قبولها مسبقاً
+          sudo mkdir -p /usr/local/lib/android/sdk/licenses
+          sudo chmod -R 777 /usr/local/lib/android/sdk
           
-          # تحميل أدوات سطر الأوامر وفك ضغطها في cmdline-tools/latest
-          cd $SDK_DIR/cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
-          unzip -q commandlinetools.zip
-          mv cmdline-tools latest
-          rm commandlinetools.zip
-          
-          # الحل الجذري: خدعة الرابط الرمزي لجعل tools/bin يشير إلى المكان الصحيح الذي يبحث عنه Buildozer
-          mkdir -p $SDK_DIR/tools
-          ln -s $SDK_DIR/cmdline-tools/latest/bin $SDK_DIR/tools/bin
-          
-          # حقن ملفات التراخيص المقبولة مسبقاً لمنع أي توقف تفاعلي
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $SDK_DIR/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
-          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > /usr/local/lib/android/sdk/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> /usr/local/lib/android/sdk/licenses/android-sdk-license
+          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> /usr/local/lib/android/sdk/licenses/android-sdk-license
 
       - name: Build with Buildozer
+        env:
+          # توجيه Buildozer لاستخدام مسارات النظام الجاهزة والمضمونة
+          ANDROIDSDK: /usr/local/lib/android/sdk
+          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.3.13750724
+          ANDROIDAPI: "33"
+          ANDROIDMINAPI: "24"
         run: |
           buildozer -v android debug
           
