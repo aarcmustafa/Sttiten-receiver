@@ -177,4 +177,10 @@ class SttitenReceiverApp(App):
 
 if __name__ == '__main__':
     SttitenReceiverApp().run()
+    from receiver_core import SttitenReceiverCore
+
+# استخدام الكلاس داخل التطبيق
+receiver = SttitenReceiverCore()
+config = receiver.tune_channel(11900, polarization="H")
+
         
