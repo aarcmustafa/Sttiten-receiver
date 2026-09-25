@@ -35,7 +35,3 @@ android.minapi = 24
 
 # (int) Android NDK version to use
 android.ndk = 25b
-
-# (str) Android NDK version to use
-android.ndk = 25b
-
