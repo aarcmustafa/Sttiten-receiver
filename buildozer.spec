@@ -1,44 +1,56 @@
 [app]
 
 # (str) Title of your application
-title = Sttiten receiver
+title = Sttiten Receiver
 
 # (str) Package name
 package.name = sttitenreceiver
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.djellouli
+package.domain = org.sttiten
 
-# (str) Application version
-version = 0.1
+# (list) Source files to include (let it empty to include all files)
+source.include_exts = py,png,jpg,kv,atlas
 
-# (str) Android build tools version to avoid license issues
-android.build_tools_version = 33.0.0
+# (list) List of directory to include (optional)
+source.include_dirs = 
 
-# (list) Target architectures (تحديد دعم معمارية ARM7 والمعماريات الأخرى)
-android.architectures = armeabi-v7a, arm64-v8a
+# (list) Source files to exclude (optional)
+source.exclude_exts = spec
 
-# (str) Source files where the app lives (relative to directory of buildozer.spec)
-source.dir = .
-
-# (list) Source files to include (بما فيها الملفات المطلوبة مثل json و hcy)
-source.include_exts = py,png,jpg,kv,atlas,json,hcy
+# (list) List of inclusions using a glob pattern
+source.exclude_patterns = license,images/*.jpg
 
 # (list) Application requirements
-requirements = python3,kivy,socket
+# تم الحفاظ فقط على python3 و kivy (ملاحظة: socket مكتبة داخلية ولا تكتب هنا)
+requirements = python3,kivy
 
-# (str) Supported orientations
+# (str) Version of the application
+version = 1.0
+
+# (list) Supported orientations
 orientation = portrait
 
-# (bool) Indicate if the application should be fullscreen or not
-fullscreen = 0
+# (list) List of permissions
+android.permissions = INTERNET
 
-# (list) Permissions
-android.permissions = INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE
+# (int) Target Android API, should be as high as possible.
+android.api = 33
 
-# (str) Supported platforms
-supported.platforms = android
+# (int) Minimum API your APK will support.
+android.minapi = 24
+
+# (str) Android NDK version to use
+android.ndk = 27.3.13750724
+
+# (list) The Android arch to build for,, can be armeabi-v7a, arm64-v8a, x86, x86_64
+# تحديد معمارية armeabi-v7a التي تركز عليها
+android.archs = armeabi-v7a
 
 [buildozer]
+
+# (int) Log level (0 = error, 1 = info, 2 = debug (with command output))
 log_level = 2
-warn_on_root = 1
+
+# (str) Path to build artifact, storage where the android SDK will be downloaded
+bin_dir = ./bin
