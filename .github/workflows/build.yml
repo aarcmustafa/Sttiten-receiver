@@ -22,6 +22,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
+      - name: Accept Android SDK licenses manually
+        run: |
+          # الموافقة المسبقة وتثبيت أدوات البناء متوافقة الإصدار لمنع أي توقف
+          echo y | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk "build-tools;33.0.0" "platforms;android-33" "platforms;android-31" || true
+
       - name: Build with Buildozer
         run: |
           buildozer -v android debug
