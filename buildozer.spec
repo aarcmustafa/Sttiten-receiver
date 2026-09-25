@@ -9,6 +9,9 @@ package.name = sttitenreceiver
 # (str) Package domain (needed for android packaging)
 package.domain = org.djellouli
 
+# (str) Application version
+version = 0.1
+
 # (str) Source files where the app lives (relative to directory of buildozer.spec)
 source.dir = .
 
