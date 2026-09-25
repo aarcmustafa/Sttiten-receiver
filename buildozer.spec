@@ -1,5 +1,12 @@
 [app]
 
+# (str) Source directory where the application files are located
+source.dir = .
+
+# (str) Application versioning (version number or string)
+version = 0.1
+
+
 # (str) Title of your application
 title = Sttiten Receiver
 
