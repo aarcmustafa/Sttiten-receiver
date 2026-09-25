@@ -22,13 +22,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Force Pre-accepted Android SDK Licenses
+      - name: Fix SDK Tools Path & Pre-accept Licenses
         run: |
-          # إنشاء مسارات التراخيص التي يعتمد عليها sdkmanager داخلياً
           SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
-          mkdir -p $SDK_DIR/licenses
           
-          # حقن رموز التراخيص المقبولة لمنع أي توقف تفاعلي نهائياً
+          # إنشاء مجلدات التراخيص وأدوات سطر الأوامر مسبقاً
+          mkdir -p $SDK_DIR/licenses
+          mkdir -p $SDK_DIR/cmdline-tools
+          
+          # تحميل أدوات سطر الأوامر وفك ضغطها
+          cd $SDK_DIR/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
+          unzip -q commandlinetools.zip
+          mv cmdline-tools latest
+          rm commandlinetools.zip
+          
+          # حل مشكلة المسار القديم الذي يطلبه Buildozer عبر إنشاء مجلد tools وربطه
+          mkdir -p $SDK_DIR/tools/bin
+          ln -s $SDK_DIR/cmdline-tools/latest/bin/sdkmanager $SDK_DIR/tools/bin/sdkmanager
+          
+          # حقن التراخيص المقبولة لمنع أي توقف تفاعلي
           echo "24333f8a43b681427c30427efe84f2c0ab4748d1" > $SDK_DIR/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
           echo "d56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
