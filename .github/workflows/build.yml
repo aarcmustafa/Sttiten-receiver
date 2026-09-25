@@ -22,24 +22,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Install Android SDK Command-line Tools Manually
+      - name: Force SDK Tools Structure for Buildozer
         run: |
-          # إنشاء الهيكل الصحيح لمجلدات الـ SDK التي ينتظرها Buildozer
-          ANDROID_SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
-          mkdir -p $ANDROID_SDK_DIR/licenses
-          mkdir -p $ANDROID_SDK_DIR/cmdline-tools
+          # تحديد مسار الـ SDK المحلي لـ Buildozer
+          SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
+          mkdir -p $SDK_DIR/licenses
+          mkdir -p $SDK_DIR/cmdline-tools
           
-          # تحميل أدوات سطر الأوامر الرسمية وفك ضغطها في المسار الصحيح
-          cd $ANDROID_SDK_DIR/cmdline-tools
+          # تحميل أدوات سطر الأوامر وفك ضغطها في cmdline-tools/latest
+          cd $SDK_DIR/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
           unzip -q commandlinetools.zip
           mv cmdline-tools latest
           rm commandlinetools.zip
           
-          # إضافة التراخيص المقبولة مسبقاً لتجنب أي توقف
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_SDK_DIR/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_SDK_DIR/licenses/android-sdk-license
-          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> $ANDROID_SDK_DIR/licenses/android-sdk-license
+          # الحل الجذري: خدعة الرابط الرمزي لجعل tools/bin يشير إلى المكان الصحيح الذي يبحث عنه Buildozer
+          mkdir -p $SDK_DIR/tools
+          ln -s $SDK_DIR/cmdline-tools/latest/bin $SDK_DIR/tools/bin
+          
+          # حقن ملفات التراخيص المقبولة مسبقاً لمنع أي توقف تفاعلي
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $SDK_DIR/licenses/android-sdk-license
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
+          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
 
       - name: Build with Buildozer
         run: |
