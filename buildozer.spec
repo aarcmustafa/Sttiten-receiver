@@ -11,6 +11,8 @@ package.domain = org.djellouli
 
 # (str) Application version
 version = 0.1
+android.build_tools_version = 33.0.0
+
 
 # (str) Source files where the app lives (relative to directory of buildozer.spec)
 source.dir = .
