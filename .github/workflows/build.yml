@@ -26,6 +26,8 @@ jobs:
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
+          # الموافقة التلقائية على جميع رخص أندرويد المتوفرة
+          yes | sdkmanager --licenses || true
           buildozer -v android debug
           
       - name: Upload APK Artifact
