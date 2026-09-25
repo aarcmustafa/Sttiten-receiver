@@ -22,13 +22,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Fix SDK Manager Paths and Licenses
+      - name: Fix SDK Manager Symlink & Licenses
         run: |
-          # إنشاء مجلدات SDK مسبقاً وتجنيب أي نقص في المسارات
+          # إنشاء المجلدات اللازمة مسبقاً
           mkdir -p /home/runner/.buildozer/android/platform/android-sdk/licenses
           mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
           
-          # وضع التراخيص المقبولة لمنع توقف البناء
+          # وضع ملفات التراخيص لمنع أي توقف
           echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
           echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
 
