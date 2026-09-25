@@ -22,23 +22,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Configure Android Environment & Licenses
+      - name: Force Pre-accepted Android SDK Licenses
         run: |
-          sudo mkdir -p /usr/local/lib/android/sdk/licenses
-          sudo chmod -R 777 /usr/local/lib/android/sdk
+          # إنشاء مسارات التراخيص التي يعتمد عليها sdkmanager داخلياً
+          SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
+          mkdir -p $SDK_DIR/licenses
           
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > /usr/local/lib/android/sdk/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> /usr/local/lib/android/sdk/licenses/android-sdk-license
-          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6488e" >> /usr/local/lib/android/sdk/licenses/android-sdk-license
+          # حقن رموز التراخيص المقبولة لمنع أي توقف تفاعلي نهائياً
+          echo "24333f8a43b681427c30427efe84f2c0ab4748d1" > $SDK_DIR/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
+          echo "504667f4c0de7af1a06de9f4b1727b8ad351d663" >> $SDK_DIR/licenses/android-sdk-license
 
       - name: Build with Buildozer
         env:
-          ANDROIDSDK: /usr/local/lib/android/sdk
-          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.3.13750724
           ANDROIDAPI: "33"
           ANDROIDMINAPI: "24"
         run: |
-          # استخدام مستوى تتبع أعلى (log_level 2 مضمن) وتوجيه المخرجات بوضوح
           buildozer -v android debug
           
       - name: Upload APK Artifact
