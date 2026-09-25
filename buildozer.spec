@@ -1,12 +1,5 @@
 [app]
 
-# (str) Source directory where the application files are located
-source.dir = .
-
-# (str) Application versioning (version number or string)
-version = 0.1
-
-
 # (str) Title of your application
 title = Sttiten Receiver
 
@@ -16,11 +9,16 @@ package.name = sttitenreceiver
 # (str) Package domain (needed for android packaging)
 package.domain = org.sttiten
 
+# (str) Source directory where the application files are located
+source.dir = .
+
+# (str) Application versioning (version number or string)
+version = 0.1
+
 # (list) Source files to include (let it match your python files and assets)
 source.include_exts = py,png,jpg,kv,atlas,json
 
 # (list) Application requirements
-# تأكد من تضمين kivy واللغات المطلوبة
 requirements = python3,kivy
 
 # (str) Supported orientations
@@ -32,12 +30,8 @@ android.api = 33
 # (int) Minimum API your APK will support.
 android.minapi = 24
 
-# (int) Android NDK version to use
-ndk = 25b
+# (int) Android NDK version to use (محدد هنا لضمان الاستقرار وعدم جلب إصدار تالف)
+android.ndk = 25b
 
 # (str) Android NDK API to use.
 android.ndk_api = 24
-
-# (str) Android entry point
-# (أو اتركها فارغة حسب نقطة بداية تطبيقك main.py)
-# android.entrypoint = org.kivy.android.PythonActivity
