@@ -13,8 +13,7 @@ package.domain = org.djellouli
 source.dir = .
 
 # (list) Source files to include (let blank to include all files)
-# تم الاكتفاء بملفات الـ json وتجاهل الـ bin للعمل اليدوي
-source.include_exts = py,png,jpg,kv,atlas,json
+source.include_exts = py,png,jpg,kv,atlas,json,hcy
 
 # (list) Application requirements
 requirements = python3,kivy,socket
