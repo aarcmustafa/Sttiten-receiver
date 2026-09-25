@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20  # زيادة وقت المهلة لمنع توقف البناء منتصف الطريق
     steps:
       - uses: actions/checkout@v2
       
@@ -22,14 +23,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev wget
 
-      - name: Pre-install Android SDK Build-Tools & Fix Aidl Error
+      - name: Pre-install Android SDK & Tools
         run: |
-          # تجهيز مسارات SDK يدوياً لمنع Buildozer من الفشل
           SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
           mkdir -p $SDK_DIR/licenses
           mkdir -p $SDK_DIR/cmdline-tools
           
-          # تحميل أدوات سطر الأوامر الرسمية
           cd $SDK_DIR/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
           unzip -q commandlinetools.zip
@@ -37,22 +36,21 @@ jobs:
           mv cmdline-tools latest
           rm commandlinetools.zip
           
-          # ربط أدوات sdkmanager لتتوافق مع متطلبات Buildozer
           mkdir -p $SDK_DIR/tools/bin
           ln -sf $SDK_DIR/cmdline-tools/latest/bin/sdkmanager $SDK_DIR/tools/bin/sdkmanager
           ln -sf $SDK_DIR/cmdline-tools/latest/bin/avdmanager $SDK_DIR/tools/bin/avdmanager
           
-          # قبول رخص أندرويد تلقائياً لمنع التوقف التفاعلي
           echo "24333f8a43b681427c30427efe84f2c0ab4748d1" > $SDK_DIR/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
           echo "d56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
           echo "504667f4c0de7af1a06de9f4b1727b8ad351d663" >> $SDK_DIR/licenses/android-sdk-license
 
-          # تثبيت build-tools و platforms المفقودة والتي تسببت في خطأ aidl
           yes | $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR --licenses || true
           $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR "platform-tools" "build-tools;33.0.2" "platforms;android-33"
 
       - name: Build with Buildozer
+        env:
+          PACKAGES_PATH: /home/runner/.buildozer
         run: |
           buildozer -v android debug
           
