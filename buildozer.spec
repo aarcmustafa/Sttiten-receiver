@@ -11,8 +11,9 @@ package.domain = org.djellouli
 
 # (str) Application version
 version = 0.1
-android.build_tools_version = 33.0.0
 
+# (str) Android build tools version to avoid license issues
+android.build_tools_version = 33.0.0
 
 # (str) Source files where the app lives (relative to directory of buildozer.spec)
 source.dir = .
@@ -31,9 +32,6 @@ fullscreen = 0
 
 # (list) Permissions
 android.permissions = INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE
-
-# (str) Android build tools version to avoid license halts
-android.build_tools_version = 33.0.0
 
 # (str) Supported platforms
 supported.platforms = android
