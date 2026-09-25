@@ -22,7 +22,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Prepare Android SDK Tools & Licenses
+      - name: Prepare Android SDK, Tools & Dependencies
         run: |
           SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
           mkdir -p $SDK_DIR/licenses
@@ -46,6 +46,10 @@ jobs:
           echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
           echo "d56f5187479451eabf01fb78af6dfcb131a6488e" >> $SDK_DIR/licenses/android-sdk-license
           echo "504667f4c0de7af1a06de9f4b1727b8ad351d663" >> $SDK_DIR/licenses/android-sdk-license
+
+          # تثبيت الحزم والأدوات الناقصة (build-tools و platforms و platform-tools) يدوياً وضمان وجود build-tools
+          yes | $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR --licenses || true
+          $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR "platform-tools" "build-tools;33.0.2" "platforms;android-33"
 
       - name: Build with Buildozer
         env:
