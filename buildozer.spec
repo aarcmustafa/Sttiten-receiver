@@ -42,8 +42,8 @@ android.api = 33
 # (int) Minimum API your APK will support.
 android.minapi = 24
 
-# (str) Android NDK version to use (تم التحديث لتفادي خطأ 404 للروابط القديمة)
-android.ndk = 25b
+# (str) Android NDK version to use (متوافق مع توصية p4a الحديثة 28c)
+android.ndk = 28c
 
 # (list) The Android arch to build for
 android.archs = armeabi-v7a
