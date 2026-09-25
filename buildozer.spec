@@ -15,6 +15,9 @@ source.dir = .
 # (str) Application versioning (version number or string)
 version = 0.1
 
+# (int) Log level (0 = error only, 1 = info, 2 = debug with full details)
+log_level = 2
+
 # (list) Source files to include (let it match your python files and assets)
 source.include_exts = py,png,jpg,kv,atlas,json
 
@@ -30,7 +33,7 @@ android.api = 33
 # (int) Minimum API your APK will support.
 android.minapi = 24
 
-# (int) Android NDK version to use (محدد هنا لضمان الاستقرار وعدم جلب إصدار تالف)
+# (int) Android NDK version to use
 android.ndk = 25b
 
 # (str) Android NDK API to use.
