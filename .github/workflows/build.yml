@@ -22,24 +22,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           
-      - name: Fix SDK Tools Path & Pre-accept Licenses
+      - name: Prepare Android SDK Tools & Licenses
         run: |
           SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
-          
-          # إنشاء مجلدات التراخيص وأدوات سطر الأوامر مسبقاً
           mkdir -p $SDK_DIR/licenses
           mkdir -p $SDK_DIR/cmdline-tools
           
-          # تحميل أدوات سطر الأوامر وفك ضغطها
+          # تحميل أدوات سطر الأوامر الحديثة
           cd $SDK_DIR/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
           unzip -q commandlinetools.zip
+          rm -rf latest
           mv cmdline-tools latest
           rm commandlinetools.zip
           
-          # حل مشكلة المسار القديم الذي يطلبه Buildozer عبر إنشاء مجلد tools وربطه
+          # إنشاء المسار القديم tools/bin وربطه لرضا Buildozer التام
           mkdir -p $SDK_DIR/tools/bin
-          ln -s $SDK_DIR/cmdline-tools/latest/bin/sdkmanager $SDK_DIR/tools/bin/sdkmanager
+          ln -sf $SDK_DIR/cmdline-tools/latest/bin/sdkmanager $SDK_DIR/tools/bin/sdkmanager
+          ln -sf $SDK_DIR/cmdline-tools/latest/bin/avdmanager $SDK_DIR/tools/bin/avdmanager
           
           # حقن التراخيص المقبولة لمنع أي توقف تفاعلي
           echo "24333f8a43b681427c30427efe84f2c0ab4748d1" > $SDK_DIR/licenses/android-sdk-license
