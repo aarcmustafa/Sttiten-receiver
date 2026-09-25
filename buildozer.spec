@@ -15,7 +15,7 @@ version = 0.1
 # (str) Source files where the app lives (relative to directory of buildozer.spec)
 source.dir = .
 
-# (list) Source files to include (let blank to include all files)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas,json,hcy
 
 # (list) Application requirements
@@ -29,6 +29,9 @@ fullscreen = 0
 
 # (list) Permissions
 android.permissions = INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE
+
+# (str) Android build tools version to avoid license halts
+android.build_tools_version = 33.0.0
 
 # (str) Supported platforms
 supported.platforms = android
