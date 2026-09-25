@@ -9,6 +9,9 @@ package.name = sttitenreceiver
 # (str) Package domain (needed for android packaging)
 package.domain = org.sttiten
 
+# (str) Source directory where the application files are located
+source.dir = .
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
@@ -22,7 +25,6 @@ source.exclude_exts = spec
 source.exclude_patterns = license,images/*.jpg
 
 # (list) Application requirements
-# تم الحفاظ فقط على python3 و kivy (ملاحظة: socket مكتبة داخلية ولا تكتب هنا)
 requirements = python3,kivy
 
 # (str) Version of the application
@@ -43,8 +45,7 @@ android.minapi = 24
 # (str) Android NDK version to use
 android.ndk = 27.3.13750724
 
-# (list) The Android arch to build for,, can be armeabi-v7a, arm64-v8a, x86, x86_64
-# تحديد معمارية armeabi-v7a التي تركز عليها
+# (list) The Android arch to build for
 android.archs = armeabi-v7a
 
 [buildozer]
