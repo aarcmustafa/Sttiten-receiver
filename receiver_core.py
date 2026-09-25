@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import socket
+
 class SttitenReceiverCore:
     def __init__(self):
         # ترددات المذبذب المحلي القياسية لـ Universal LNB (بالميجا هرتز)
@@ -36,7 +38,7 @@ class SttitenReceiverCore:
         channel_config = {
             "frequency_mhz": frequency_mhz,
             "band": band,
-            "tone_22khz": tone_22khz,                               # الحالة الأوتوماتيكية للـ 22 هرتز (True / False)
+            "tone_22khz": tone_22khz,
             "tone_status": "ON (22 kHz Active)" if tone_22khz else "OFF (0 kHz)",
             "local_oscillator_lo": active_lo,
             "if_frequency_mhz": if_frequency,
@@ -46,9 +48,30 @@ class SttitenReceiverCore:
 
         return channel_config
 
-    def tune_channel(self, frequency_mhz, polarization="H"):
+    def send_command_to_receiver(self, receiver_ip, port=20000, payload=b"\x00\x01\x00\x00"):
         """
-        محاكاة عملية ضبط القناة وإرسال أوامر التحكم (الهرتزية + الاستقطاب)
+        إرسال حزم البيانات والأوامر المستخرجة من التصنت إلى الرسيفر عبر الشبكة المحلية
+        """
+        try:
+            # إنشاء اتصال Socket عبر TCP
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(3) # مهلة زمنية للاتصال لتجنب تعليق التطبيق
+            s.connect((receiver_ip, port))
+            
+            # إرسال الحزمة الفعلية
+            s.sendall(payload)
+            
+            # استقبال رد الرسيفر (حالة الإشارة أو الاستجابة)
+            response = s.recv(1024)
+            s.close()
+            
+            return {"status": "success", "response": response}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    def tune_channel(self, frequency_mhz, polarization="H", receiver_ip=None, port=20000):
+        """
+        محاكاة عملية ضبط القناة، حساب الهرتزية، وإرسال الأوامر للرسيفر إن وجد الـ IP
         """
         config = self.process_channel_frequency(frequency_mhz, polarization)
         
@@ -57,9 +80,15 @@ class SttitenReceiverCore:
         print(f"    - حالة نغمة 22 kHz: {config['tone_status']}")
         print(f"    - الاستقطاب والجهد: {config['polarization']} ({config['voltage_v']}V)")
         print(f"    - التردد الوسيط (IF): {config['if_frequency_mhz']} MHz")
-        print("-" * 50)
         
-        # هنا يمكنك لاحقاً إضافة الكود الخاص بإرسال هذه الأوامر عبر Sockets أو واجهة الأجهزة
+        # إذا تم تمرير عنوان الـ IP الخاص بالرسيفر، يتم إرسال الأوامر شبكياً
+        if receiver_ip:
+            print(f"[*] جاري إرسال الأوامر إلى الرسيفر على IP: {receiver_ip}:{port} ...")
+            # يمكنك هنا تحويل قيم التردد إلى البايتات المستخرجة من ملفات hcy الخاصة بك
+            network_result = self.send_command_to_receiver(receiver_ip, port)
+            print(f"    - حالة الاتصال: {network_result['status']}")
+        
+        print("-" * 50)
         return config
 
 
@@ -69,12 +98,6 @@ class SttitenReceiverCore:
 if __name__ == "__main__":
     receiver = SttitenReceiverCore()
 
-    # تجربة 1: تردد من النطاق المنخفض (سيتم إيقاف الـ 22 kHz أوتوماتيكياً)
-    receiver.tune_channel(10930, polarization="V")
-
-    # تجربة 2: تردد من النطاق العالي (سيتم تفعيل الـ 22 kHz أوتوماتيكياً لمنع فقدان الإشارة)
-    receiver.tune_channel(11900, polarization="H")
-
-    # تجربة 3: تردد آخر عالي للتأكد من الثبات
-    receiver.tune_channel(12523, polarization="H")
-        
+    # تجربة محلية مع محاكاة إرسال الأوامر (استبدل 192.168.1.X بـ IP الرسيفر الحقيقي لديك)
+    receiver.tune_channel(11900, polarization="H", receiver_ip="192.168.1.50")
+            
