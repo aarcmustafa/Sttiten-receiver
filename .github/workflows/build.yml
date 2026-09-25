@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20  # زيادة وقت المهلة لمنع توقف البناء منتصف الطريق
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
       
@@ -15,6 +15,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          
+      - name: Clean Old Buildozer Cache & Layout
+        run: |
+          rm -rf ~/.buildozer
+          rm -rf .buildozer
           
       - name: Install dependencies
         run: |
@@ -49,8 +54,6 @@ jobs:
           $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR "platform-tools" "build-tools;33.0.2" "platforms;android-33"
 
       - name: Build with Buildozer
-        env:
-          PACKAGES_PATH: /home/runner/.buildozer
         run: |
           buildozer -v android debug
           
