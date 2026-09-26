@@ -1,58 +1,51 @@
 [app]
 
-# (str) Title of your application
+# اسم التطبيق
 title = Satellite Controller
 
-# (str) Package name
+# اسم الحزمة
 package.name = satellitecontroller
 
-# (str) Package domain (needed for android packaging)
+# نطاق الحزمة
 package.domain = org.receiver
 
-# (str) Application version (مهم جداً لتجنب خطأ الإصدار)
+# إصدار التطبيق
 version = 1.0
 
-# (str) Source files where the let's go (relative to directory of buildozer.spec)
+# مجلد المشروع
 source.dir = .
 
-# (list) Source files to include
-source.include_exts = py,png,jpg,kv,atlas
+# الملفات التي سيتم تضمينها
+source.include_exts = py,png,jpg,jpeg,kv,atlas,json
 
-# (list) Application requirements
+# المتطلبات
 requirements = python3,kivy
 
-# (str) Supported orientation
+# اتجاه الشاشة
 orientation = portrait
 
-#
-# Android specific
-#
-
-# (int) Target Android API
+# Android
 android.api = 33
-
-# (int) Minimum API your APK will support
-android.min_api = 21
-
-# (str) Android NDK version to use (تثبيت الإصدار المتوافق المستقر)
+android.minapi = 21
 android.ndk = 25b
 
-# (bool) Use --private data storage (True) or --dir public storage (False)
+# التخزين الخاص بالتطبيق
 android.private_storage = True
 
-# (list) Permissions
+# الصلاحيات
 android.permissions = INTERNET,ACCESS_NETWORK_STATE
 
-# (str) python-for-android branch to use
+# python-for-android
 p4a.branch = master
+
 
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug)
+# مستوى السجل
 log_level = 2
 
-# (str) Path to build artifact storage
+# مجلد البناء
 build_dir = .buildozer
 
-# (str) Path to build output (APK)
+# مجلد APK النهائي
 bin_dir = ./bin
