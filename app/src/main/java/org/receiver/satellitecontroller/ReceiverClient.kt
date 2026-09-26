@@ -1,6 +1,8 @@
 package org.receiver.satellitecontroller
 
+import android.content.Context
 import android.util.Log
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
@@ -11,6 +13,23 @@ object ReceiverClient {
     private const val TAG = "ReceiverClient"
     private const val IP = "192.168.1.2"
     private const val PORT = 20000
+
+    // ==========================================
+    // أضف دالة قراءة ملف الـ JSON هنا في البداية أو النهاية داخل الكلاس
+    // ==========================================
+    fun loadJsonConfig(context: Context, fileName: String): String? {
+        return try {
+            val inputStream = context.assets.open(fileName)
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer, Charsets.UTF_8)
+        } catch (e: IOException) {
+            Log.e(TAG, "[!] خطأ في قراءة ملف الـ JSON: ${e.message}")
+            null
+        }
+    }
 
     fun sendCommand(commandStr: String): ByteArray? {
         var socket: Socket? = null
