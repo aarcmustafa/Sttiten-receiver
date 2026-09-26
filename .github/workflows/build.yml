@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # هذه الخطوة تنشئ ملفات gradlew مفقودة تلقائياً في الجذر
+    # توليد ملفات التشغيل تلقائياً
     - name: Generate Gradle Wrapper
       run: gradle wrapper
 
