@@ -14,9 +14,7 @@ object ReceiverClient {
     private const val IP = "192.168.1.2"
     private const val PORT = 20000
 
-    // ==========================================
-    // أضف دالة قراءة ملف الـ JSON هنا في البداية أو النهاية داخل الكلاس
-    // ==========================================
+    // قراءة ملفات الـ JSON من مجلد assets
     fun loadJsonConfig(context: Context, fileName: String): String? {
         return try {
             val inputStream = context.assets.open(fileName)
@@ -66,9 +64,7 @@ object ReceiverClient {
         } finally {
             try {
                 socket?.close()
-            } catch (e: Exception) {
-                // تجاهل خطأ الإغلاق
-            }
+            } catch (e: Exception) {}
         }
     }
 
