@@ -43,10 +43,15 @@ jobs:
     - name: Ensure local bin in PATH
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Pre-create Android SDK build-tools directory
+    - name: Setup Android SDK manually to avoid path errors
       run: |
-        # إنشاء المجلد مسبقاً وتثبيت الحزم لضمان عدم ضياع aidl
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/33.0.0
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/cmdline-tools
+        cd /home/runner/.buildozer/android/platform/android-sdk/cmdline-tools
+        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip -q commandlinetools.zip
+        mv cmdline-tools latest
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
+        ln -s /home/runner/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
 
     - name: Build with Buildozer
       run: |
