@@ -9,17 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    # استخدام Action جاهز يدير بيئة Buildozer والأدوات (SDK, NDK, build-tools) بالكامل
     - name: Build with Buildozer
       uses: ArtemSBulgakov/buildozer-action@v1
       with:
         command: buildozer -v android debug
         buildozer_version: master
 
-    - name: Upload APK Artifact
+    - name: Upload generated APK
       uses: actions/upload-artifact@v4
       with:
         name: package
