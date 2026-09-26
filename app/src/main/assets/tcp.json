@@ -1,0 +1,10 @@
+{
+  "app": "mktvsmart.screen",
+  "host": null,
+  "protocol": "TCP",
+  "remoteIp": "192.168.1.2",
+  "remotePort": 20000,
+  "security": false,
+  "sessionId": "eaaba025-c527-4009-831d-256ba90fbc6d",
+  "time": "2026-09-25 17:45:03"
+}
