@@ -14,16 +14,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Install system dependencies
         run: |
@@ -42,37 +42,66 @@ jobs:
             libncurses5-dev \
             libncursesw5-dev
 
-      - name: Install Android SDK
+      - name: Install Buildozer
         run: |
-          mkdir -p $HOME/android-sdk/cmdline-tools
+          python -m pip install --upgrade pip
+          pip install buildozer cython
 
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-
-          unzip -q commandlinetools-linux-11076708_latest.zip \
-            -d $HOME/android-sdk/cmdline-tools
-
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools \
-            $HOME/android-sdk/cmdline-tools/latest
-
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/build-tools/34.0.0" >> $GITHUB_PATH
-
-      - name: Install Android SDK packages
+      - name: Prepare Buildozer directories
         run: |
-          yes | sdkmanager --licenses || true
+          mkdir -p "$HOME/.buildozer/android/platform/android-sdk"
 
-          sdkmanager \
+      - name: Install Android SDK into Buildozer directory
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+
+          mkdir -p "$SDK/cmdline-tools"
+
+          wget -q \
+            https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+            -O /tmp/cmdline-tools.zip
+
+          unzip -q /tmp/cmdline-tools.zip \
+            -d "$SDK/cmdline-tools"
+
+          mv "$SDK/cmdline-tools/cmdline-tools" \
+            "$SDK/cmdline-tools/latest"
+
+          export ANDROID_HOME="$SDK"
+          export ANDROID_SDK_ROOT="$SDK"
+
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+
+          echo "$SDK/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK/build-tools/34.0.0" >> "$GITHUB_PATH"
+
+      - name: Install Android SDK components
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;34.0.0"
 
-      - name: Install Python packages
+      - name: Verify AIDL
         run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+
+          echo "Android SDK:"
+          echo "$SDK"
+
+          echo "Build Tools:"
+          ls -la "$SDK/build-tools"
+
+          echo "AIDL:"
+          ls -la "$SDK/build-tools/34.0.0/aidl"
+
+          "$SDK/build-tools/34.0.0/aidl" --version
 
       - name: Build APK
         run: |
@@ -83,3 +112,4 @@ jobs:
         with:
           name: satellite-controller-apk
           path: bin/*.apk
+          if-no-files-found: error
