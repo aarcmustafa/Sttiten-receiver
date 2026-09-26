@@ -18,13 +18,9 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    # إعداد أندرويد SDK مع السماح بقبول التراخيص تلقائياً من خلال الإعدادات المدعومة للإجراء
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-
-    # الموافقة التلقائية على جميع تراخيص أدوات أندرويد لمنع توقف البناء
-    - name: Accept Android SDK Licenses
-      run: |
-        yes | sdkmanager --licenses || true
 
     - name: Generate Clean Gradle Wrapper
       run: |
