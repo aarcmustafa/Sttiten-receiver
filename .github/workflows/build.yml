@@ -2,13 +2,11 @@ name: CI to APK
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -19,12 +17,12 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install System Dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
           python3-pip \
-          build-essential \
+          build-core \
           git \
           zip \
           unzip \
@@ -34,14 +32,15 @@ jobs:
           zlib1g-dev \
           libncurses5-dev \
           libncursesw5-dev \
+          libtinfo5 \
+          cmake \
           libffi-dev \
-          libssl-dev \
-          ant
+          libssl-dev
 
-    - name: Install Buildozer, Cython, and p4a
+    - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
-        pip install Cython==0.29.33 buildozer==1.5.0
+        pip install --user buildozer cython sh
 
     - name: Build with Buildozer
       run: |
@@ -50,6 +49,6 @@ jobs:
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Sttiten-Receiver-APK
+        name: package
         path: bin/*.apk
         
