@@ -18,13 +18,12 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # توليد ملفات Gradle Wrapper الرسمية في الجذر لتوفير gradlew المفقود
-    - name: Generate Wrapper
+    # تحديد إصدار غارادل المتوافق تماماً مع إصدارات أندرويد الحديثة
+    - name: Generate Compatible Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 8.5
+        gradle wrapper --gradle-version 8.2 --distribution-type bin
         chmod +x gradlew
 
-    # بناء التطبيق باستخدام الـ Wrapper المتولد حديثاً وبدون Daemon لتجنب التعارض
     - name: Build Debug APK
       run: ./gradlew assembleDebug --no-daemon --stacktrace
 
