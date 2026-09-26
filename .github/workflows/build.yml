@@ -18,15 +18,12 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: '8.5'
-        arguments: assembleDebug --stacktrace
+    # بناء التطبيق مباشرة باستخدام الأداة العامة بدون Daemon معقد
+    - name: Build APK with Android Command
+      run: ./gradlew assembleDebug --no-daemon || gradle assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Stitten-receiver-apk
         path: app/build/outputs/apk/debug/app-debug.apk
-        
