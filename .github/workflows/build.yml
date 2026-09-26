@@ -18,15 +18,20 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # توليد ملف الـ Wrapper النظيف
+    # تثبيت مسار الـ SDK وضبط متغير البيئة لكي يتعرف عليه نظام أندرويد فوراً
+    - name: Setup Android SDK Environment
+      run: |
+        echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+
     - name: Generate Clean Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.4 --distribution-type bin
         chmod +x gradlew
 
-    # بناء ملف الـ APK مباشرة بدون أي إضافات SDK خارجية تسبب تداخل التراخيص
+    # تشغيل البناء مع تتبع دقيق لمعرفة أي خطأ برمجي لو وجد
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --no-daemon
+      run: ./gradlew clean assembleDebug --no-daemon --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
