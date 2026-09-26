@@ -12,15 +12,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # التصحيح: استخدام الإجراء الرسمي الصحيح لإعداد الجافا
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+    # تثبيت حزم أندرويد المطلوبة مباشرة دون الاعتماد على إجراءات خارجية تطلب رخص مفقودة
+    - name: Install Essential Android SDK Components
+      run: |
+        echo "y" | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
 
     - name: Generate Clean Gradle Wrapper
       run: |
