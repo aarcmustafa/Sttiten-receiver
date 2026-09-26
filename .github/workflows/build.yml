@@ -1,115 +1,32 @@
-name: Build Android APK
+name: Build Stitten-receiver APK
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            git \
-            zip \
-            unzip \
-            wget \
-            curl \
-            autoconf \
-            libtool \
-            pkg-config \
-            cmake \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
 
-      - name: Install Buildozer
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython
-
-      - name: Prepare Buildozer directories
-        run: |
-          mkdir -p "$HOME/.buildozer/android/platform/android-sdk"
-
-      - name: Install Android SDK into Buildozer directory
-        run: |
-          SDK="$HOME/.buildozer/android/platform/android-sdk"
-
-          mkdir -p "$SDK/cmdline-tools"
-
-          wget -q \
-            https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
-            -O /tmp/cmdline-tools.zip
-
-          unzip -q /tmp/cmdline-tools.zip \
-            -d "$SDK/cmdline-tools"
-
-          mv "$SDK/cmdline-tools/cmdline-tools" \
-            "$SDK/cmdline-tools/latest"
-
-          export ANDROID_HOME="$SDK"
-          export ANDROID_SDK_ROOT="$SDK"
-
-          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
-
-          echo "$SDK/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
-          echo "$SDK/build-tools/34.0.0" >> "$GITHUB_PATH"
-
-      - name: Install Android SDK components
-        run: |
-          SDK="$HOME/.buildozer/android/platform/android-sdk"
-
-          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-
-          "$SDK/cmdline-tools/latest/bin/sdkmanager" \
-            "platform-tools" \
-            "platforms;android-33" \
-            "build-tools;34.0.0"
-
-      - name: Verify AIDL
-        run: |
-          SDK="$HOME/.buildozer/android/platform/android-sdk"
-
-          echo "Android SDK:"
-          echo "$SDK"
-
-          echo "Build Tools:"
-          ls -la "$SDK/build-tools"
-
-          echo "AIDL:"
-          ls -la "$SDK/build-tools/34.0.0/aidl"
-
-          "$SDK/build-tools/34.0.0/aidl" --version
-
-      - name: Build APK
-        run: |
-          buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: satellite-controller-apk
-          path: bin/*.apk
-          if-no-files-found: error
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Stitten-receiver-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
+        
