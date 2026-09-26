@@ -18,19 +18,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    # الموافقة التلقائية والمضمونة على تراخيص الـ SDK عبر تمرير حرف y بصفة مستمرة
-    - name: Accept Android SDK Licenses Automatically
-      run: |
-        echo y | sdkmanager --licenses || true
-
+    # توليد ملف الـ Wrapper النظيف
     - name: Generate Clean Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.4 --distribution-type bin
         chmod +x gradlew
 
+    # بناء ملف الـ APK مباشرة بدون أي إضافات SDK خارجية تسبب تداخل التراخيص
     - name: Build Debug APK
       run: ./gradlew clean assembleDebug --no-daemon
 
