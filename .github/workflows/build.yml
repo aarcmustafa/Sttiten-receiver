@@ -18,10 +18,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # تحديد إصدار غارادل المتوافق تماماً مع إصدارات أندرويد الحديثة
-    - name: Generate Compatible Gradle Wrapper
+    # توليد ملفات Wrapper متوافقة تماماً بإصدار 8.4 المستقر لتجنب انهيار الـ Executor
+    - name: Generate Stable Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 8.2 --distribution-type bin
+        gradle wrapper --gradle-version 8.4 --distribution-type bin
         chmod +x gradlew
 
     - name: Build Debug APK
