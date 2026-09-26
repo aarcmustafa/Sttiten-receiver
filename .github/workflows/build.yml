@@ -18,14 +18,17 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # توليد ملفات Wrapper متوافقة تماماً بإصدار 8.4 المستقر لتجنب انهيار الـ Executor
-    - name: Generate Stable Gradle Wrapper
+    # توليد ملفات الـ Wrapper بوضعية نظيفة ومتوافقة
+    - name: Generate Clean Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.4 --distribution-type bin
         chmod +x gradlew
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
+    # تنظيف بيئة العمل وإجبار غارادل على البناء بوضع آمن تماماً بدون تعارضات
+    - name: Build Debug APK Cleanly
+      run: ./gradlew clean assembleDebug --no-daemon --refresh-dependencies
+      env:
+        ORG_GRADLE_PROJECT_jvmargs: "-Xmx2048m -Dfile.encoding=UTF-8"
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
