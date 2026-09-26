@@ -9,7 +9,7 @@ package.name = satellitecontroller
 # (str) Package domain (needed for android packaging)
 package.domain = org.receiver
 
-# (str) Application version (مطلوب لحل الخطأ الأخير)
+# (str) Application version (مهم جداً لتجنب خطأ الإصدار)
 version = 1.0
 
 # (str) Source files where the let's go (relative to directory of buildozer.spec)
@@ -34,7 +34,7 @@ android.api = 33
 # (int) Minimum API your APK will support
 android.min_api = 21
 
-# (str) Android NDK version to use
+# (str) Android NDK version to use (تثبيت الإصدار المتوافق المستقر)
 android.ndk = 25b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
