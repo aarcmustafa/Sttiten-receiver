@@ -18,6 +18,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    # هذه الخطوة تنشئ ملفات gradlew مفقودة تلقائياً في الجذر
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
