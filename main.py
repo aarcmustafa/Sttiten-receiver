@@ -1,90 +1,70 @@
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
+import socket
+import zlib
+import binascii
 
-# 1. استاستدعاء ملف الهرتزية والمنطق المستقل من الجذر
-from receiver_core import SttitenReceiverCore
+# إعدادات الاتصال بالرسيفر
+IP = "192.168.1.2"
+PORT = 20000
 
-class SttitenReceiverAppUI(BoxLayout):
-    def __init__(self, **kwargs):
-        super(SttitenReceiverAppUI, self).__init__(**kwargs)
-        self.orientation = 'vertical'
-        self.padding = 30
-        self.spacing = 20
+def send_command(command_str):
+    try:
+        # إنشاء اتصال TCP
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((IP, PORT))
+        
+        # تجهيز التغليف (Start + Length + End + Payload) بناءً على البروتوكول المكتشف
+        payload = f'{{"request":"{command_str}"}}'
+        header_prefix = "Start"
+        header_suffix = "End"
+        
+        # حساب طول الطلب وتنسيقه بـ 7 خانات
+        length_str = f"{len(payload):07d}"
+        wrapped_data = f"{header_prefix}{length_str}{header_suffix}{payload}"
+        
+        print(f"[*] جاري إرسال الأمر: {command_str}...")
+        s.sendall(wrapped_data.encode('utf-8'))
+        
+        # استقبال الرد من الرسيفر
+        response = s.recv(4096)
+        print(f"[*] تم استقبال الرد الخام بحجم: {len(response)} بايت")
+        
+        s.close()
+        return response
+    except Exception as e:
+        print(f"[!] حدث خطأ أثناء الاتصال: {e}")
+        return None
 
-        # تهيئة كلاس التحكم الخاص بالترددات والـ 22kHz
-        self.receiver = SttitenReceiverCore()
-
-        # عنوان التطبيق
-        self.add_widget(Label(
-            text='Sttiten Receiver - 22kHz Control',
-            font_size=22,
-            size_hint_y=None,
-            height=50
-        ))
-
-        # حقل إدخال التردد
-        self.add_widget(Label(text='أدخل التردد بالميجا هرتز (مثال: 11900):', size_hint_y=None, height=30))
-        self.freq_input = TextInput(
-            text='11900',
-            multiline=False,
-            input_filter='int',
-            size_hint_y=None,
-            height=50
-        )
-        self.add_widget(self.freq_input)
-
-        # زر الفحص والتنفيذ
-        self.tune_btn = Button(
-            text='ضبط القناة وفحص الهرتزية أوتوماتيكياً',
-            size_hint_y=None,
-            height=60,
-            background_color=(0.1, 0.5, 0.8, 1)
-        )
-        self.tune_btn.bind(on_press=self.on_tune_pressed)
-        self.add_widget(self.tune_btn)
-
-        # مكان عرض النتائج
-        self.result_label = Label(
-            text='النتيجة ستظهر هنا...',
-            font_size=16,
-            halign='center',
-            valign='middle'
-        )
-        self.result_label.bind(size=self.result_label.setter('text_size'))
-        self.add_widget(self.result_label)
-
-    def on_tune_pressed(self, instance):
-        try:
-            # قراءة التردد المدخل وتحويله لرقم صحيح
-            freq = int(self.freq_input.text)
+def extract_and_decompress(response_bytes):
+    if not response_bytes:
+        return
+    
+    try:
+        # البحث عن توقيع ضغط Zlib الشهير (789c) في الرد الخام
+        hex_data = binascii.hexlify(response_bytes).decode('utf-8')
+        zlib_signature = "789c"
+        
+        pos = hex_data.find(zlib_signature)
+        if pos != -1:
+            # اقتطاع البيانات ابتداءً من توقيع Zlib
+            compressed_hex = hex_data[pos:]
             
-            # افتراض الاستقطاب أفقي H للتجربة (يمكن ربطه بـ Spinner لاحقاً)
-            polarization = "H"
+            # تحويل السداسي إلى بايتات وفك الضغط
+            compressed_bytes = binascii.unhexlify(compressed_hex)
+            decompressed_data = zlib.decompress(compressed_bytes)
+            
+            print("[+] تم فك ضغط البيانات بنجاح:")
+            print(decompressed_data.decode('utf-8'))
+        else:
+            print("[-] لم يتم العثور على بيانات مضغوطة بـ Zlib في الاستجابة.")
+            # محاولة طباعة الرد كـ نص عادي إذا لم يوجد ضغط
+            print(response_bytes.decode('utf-8', errors='ignore'))
+            
+    except Exception as e:
+        print(f"[!] خطأ أثناء معالجة وفك ضغط البيانات: {e}")
 
-            # 2. استدعاء دوال الكلاس المستقل (الهرتزية والترددات أوتوماتيكياً)
-            channel_data = self.receiver.tune_channel(freq, polarization)
-
-            # عرض النتائج مباشرة على شاشة التطبيق
-            info_text = (
-                f"التردد: {channel_data['frequency_mhz']} MHz\n"
-                f"النطاق: {channel_data['band']}\n"
-                f"حالة 22kHz: {channel_data['tone_status']}\n"
-                f"الاستقطاب والجهد: {channel_data['polarization']} ({channel_data['voltage_v']}V)\n"
-                f"التردد الوسيط (IF): {channel_data['if_frequency_mhz']} MHz"
-            )
-            self.result_label.text = info_text
-
-        except ValueError:
-            self.result_label.text = "خطأ: يجيب إدخال رقم صحيح للتردد!"
-
-class SttitenReceiverApp(App):
-    def build(self):
-        self.title = "Sttiten Receiver"
-        return SttitenReceiverAppUI()
-
-if __name__ == '__main__':
-    SttitenReceiverApp().run()
-                        
+if __name__ == "__main__":
+    # تجربة إرسال الأمر 19 (أو يمكنك تغييره إلى 405)
+    target_command = "19"
+    raw_response = send_command(target_command)
+    extract_and_decompress(raw_response)
+        
