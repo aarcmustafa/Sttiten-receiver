@@ -12,22 +12,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # التصحيح: استخدام الإجراء الرسمي الصحيح لإعداد الجافا
     - name: Set up JDK 17
-      uses: android-actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    # استخدام الإجراء الرسمي المعتمد لتجهيز بيئة أندرويد وقبول التراخيص تلقائياً في الخلفية
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+      uses: android-actions/setup-android@v3
 
     - name: Generate Clean Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.2 --distribution-type bin
         chmod +x gradlew
 
-    # بناء ملف الـ APK مع تفعيل خاصية تجنب التضاريس والذاكرة المستقرة
     - name: Build Debug APK
       run: ./gradlew clean assembleDebug --no-daemon
       env:
