@@ -18,15 +18,14 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # توليد ملفات الـ Wrapper بوضعية نظيفة ومتوافقة
     - name: Generate Clean Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.4 --distribution-type bin
         chmod +x gradlew
 
-    # تنظيف بيئة العمل وإجبار غارادل على البناء بوضع آمن تماماً بدون تعارضات
-    - name: Build Debug APK Cleanly
-      run: ./gradlew clean assembleDebug --no-daemon --refresh-dependencies
+    # تشغيل البناء مع معامل --info لإظهار التفاصيل الكاملة للخطأ في السجلات
+    - name: Build Debug APK with Info
+      run: ./gradlew clean assembleDebug --no-daemon --info
       env:
         ORG_GRADLE_PROJECT_jvmargs: "-Xmx2048m -Dfile.encoding=UTF-8"
 
